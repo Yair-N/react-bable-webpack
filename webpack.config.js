@@ -1,7 +1,9 @@
 //webpack.config.js
+const { SourceMapDevToolPlugin } = require("webpack");
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InterpolateHtmlPlugin = require('interpolate-html-plugin');
+
 
 
 module.exports = {
@@ -21,6 +23,11 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.js$/,
+                enforce: 'pre',
+                use: ['source-map-loader'],
+            },
+            {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
                 loader: 'babel-loader',
@@ -28,11 +35,6 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']
-            },
-            {
-                test: /\.js$/,
-                enforce: 'pre',
-                use: ['source-map-loader'],
             },
             {
                 test: /\.svg$/,
@@ -44,16 +46,25 @@ module.exports = {
                         },
                     },
                 ],
+            },
+            {
+                test: /\.(jpe?g|png|gif)$/i,
+                loader: 'file-loader',
+
             }
         ]
     },
     plugins: [
-        new InterpolateHtmlPlugin({ PUBLIC_URL: path.join(__dirname, '/public') }),
+        new InterpolateHtmlPlugin({ PUBLIC_URL: '.' }),
         new HtmlWebpackPlugin({
             inject: true,
             template: path.join(__dirname, '/public/index.html')
         }),
+        new SourceMapDevToolPlugin({
+            filename: '[file].map'
+        }),
 
+    ],
+    mode: 'development',
 
-    ]
 }
